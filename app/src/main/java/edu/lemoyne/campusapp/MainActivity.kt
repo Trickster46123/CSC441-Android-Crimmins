@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.pm.ShortcutInfoCompat
 import edu.lemoyne.campusapp.ui.theme.CampusAppTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -109,6 +108,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth()
         )
 
+        // --- Lab 7 · Task 4: a live character counter ---
+        Text(
+            text = "${newGoal.length} / 40",
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // --- Class 7 · Step 4: the button changes the state ---
@@ -117,6 +123,21 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             newGoal = ""
         }) {
             Text("Add goal")
+        }
+        // --- Lab 7 · Task 1: remove the last item ---
+        Button(onClick = {
+            if (goals.isNotEmpty()) {
+                goals.removeAt(goals.lastIndex)
+            }
+        }) {
+            Text("Remove last")
+        }
+
+// --- Lab 7 · Task 3: clear all ---
+        Button(onClick = {
+            goals.clear()
+        }) {
+            Text("Clear all")
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -138,9 +159,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // --- Class 7 · Step 2: draw whatever is in the list ---
+
+        // --- Lab 7 · Task 2: singular and plural ---
         Text(
-            text = "${goals.size} goals",
+            text = if (goals.size == 1) "1 goal" else "${goals.size} goals",
             fontWeight = FontWeight.Bold
         )
 
