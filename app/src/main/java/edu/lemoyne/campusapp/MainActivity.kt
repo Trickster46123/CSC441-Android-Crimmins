@@ -60,6 +60,10 @@ fun validateGoalName(input: String, existing: List<String>): String? {
 
     return when {
         name.isEmpty() -> "Enter a goal name"
+        // --- Lab 8 · Task 1: minimum length ---
+        name.length < 3 -> "Too short — at least 3 characters"
+        // --- Lab 8 · Task 2: my own rule ---
+        !name.first().isLetter() -> "Start with a letter"
         name.length > MAX_NAME_LENGTH ->
             "Keep it to $MAX_NAME_LENGTH characters or fewer"
         existing.any { it.equals(name, ignoreCase = true) } ->
@@ -67,7 +71,6 @@ fun validateGoalName(input: String, existing: List<String>): String? {
         else -> null
     }
 }
-
 
 // --- Class 7 · Step 1: a counter that remembers ---
 @Composable
