@@ -31,3 +31,11 @@ Week 6, Friday.
 | Read                             | It added the goal to the list                                               | Yes      |
 | Study Kotlin                     | It added the goal normally                                                  | Yes      |
 | A goal longer than 40 characters | It stopped letting me type after 40 characters                              | Yes      |
+
+## Week 7 — Wednesday (Lab 9)
+
+1. After rotating, I was still on the All goals screen.
+
+2. My two new goals were gone, and the list went back to the original four goals.
+
+3. rememberSaveable kept track of which screen I was on after rotating. However, remember did not save the two goals I added, so the list reset to the original four.

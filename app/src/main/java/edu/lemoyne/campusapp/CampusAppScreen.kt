@@ -1,4 +1,3 @@
-
 package edu.lemoyne.campusapp
 
 import android.content.res.Configuration
@@ -77,7 +76,6 @@ fun CounterDemo() {
 // --- Class 9 · Step 2: one owner for the data ---
 @Composable
 fun CampusAppScreen(modifier: Modifier = Modifier) {
-
     // --- Class 7 · Step 2: the list lives in state ---
     val goals = remember {
         mutableStateListOf(
@@ -96,6 +94,9 @@ fun CampusAppScreen(modifier: Modifier = Modifier) {
             goals = goals,
             onAddGoal = { goals.add(it) },
             onSeeAll = { currentScreen = "list" },
+
+            // --- Lab 9 · Task 2: open About ---
+            onAbout = { currentScreen = "about" },
             modifier = modifier
         )
 
@@ -104,16 +105,24 @@ fun CampusAppScreen(modifier: Modifier = Modifier) {
             onBack = { currentScreen = "home" },
             modifier = modifier
         )
+
+        // --- Lab 9 · Task 2: navigate to the About screen ---
+        "about" -> AboutScreen(
+            onBack = { currentScreen = "home" },
+            modifier = modifier
+        )
     }
 }
 
 
 // --- Class 9 · Step 2: HomeScreen gets its data from outside ---
+// --- Lab 9 · Task 2: About screen callback ---
 @Composable
 fun HomeScreen(
     goals: List<String>,
     onAddGoal: (String) -> Unit,
     onSeeAll: () -> Unit,
+    onAbout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -233,9 +242,13 @@ fun HomeScreen(
 
         // --- Class 9 · Step 5: open the goal list ---
         Spacer(modifier = Modifier.height(8.dp))
-
+// --- Class 9 · Step 5: open the goal list ---
         Button(onClick = onSeeAll) {
             Text("See all goals")
+        }
+// --- Lab 9 · Task 2: About button ---
+        TextButton(onClick = onAbout) {
+            Text("About")
         }
         // --- Lab 6 · Task 2: footer ---
         Spacer(modifier = Modifier.height(24.dp))
@@ -277,6 +290,12 @@ fun ListScreen(
             fontWeight = FontWeight.Bold
         )
 
+// --- Lab 9 · Task 1: count on the list screen ---
+        Text(
+            text = if (goals.size == 1) "1 goal" else "${goals.size} goals",
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         for (goal in goals) {
@@ -289,7 +308,42 @@ fun ListScreen(
     }
 }
 
+// --- Lab 9 · Task 2: a third screen ---
+@Composable
+fun AboutScreen(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BackHandler {
+        onBack()
+    }
 
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(24.dp)
+    ) {
+        TextButton(onClick = onBack) {
+            Text("Back")
+        }
+
+        Text(
+            text = "About",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Momentum helps me keep track of my goals and stay motivated."
+        )
+
+        Text(
+            text = "Built for CSC 441 by Sam Crimmins."
+        )
+    }
+}
 
 // --- Class 9 · Step 2: previews need sample data now ---
 @Preview(showBackground = true)
@@ -299,8 +353,9 @@ fun HomeScreenPreview() {
         HomeScreen(
             goals = listOf("Finish assignments", "Workout"),
             onAddGoal = {},
-            onSeeAll = {}
-        )
+            onSeeAll = {},
+// --- Lab 9 · Task 2: About preview callback ---
+            onAbout = {})
     }
 }
 
@@ -317,8 +372,9 @@ fun HomeScreenDarkPreview() {
             HomeScreen(
                 goals = listOf("Finish assignments", "Workout"),
                 onAddGoal = {},
-                onSeeAll = {}
-            )
+                onSeeAll = {},
+// --- Lab 9 · Task 2: About preview callback ---
+                onAbout = {})
         }
     }
 }
