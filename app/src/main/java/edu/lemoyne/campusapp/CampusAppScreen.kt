@@ -474,3 +474,12 @@ fun ListScreenEmptyPreview() {
         )
     }
 }
+
+// --- Checkpoint 1: About screen preview ---
+@Preview(showBackground = true)
+@Composable
+fun AboutScreenPreview() {
+    CampusAppTheme {
+        AboutScreen(onBack = {})
+    }
+}
