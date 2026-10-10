@@ -113,6 +113,10 @@ fun CampusAppScreen(modifier: Modifier = Modifier) {
 
             // --- Class 10 · Step 4: only the owner changes the list ---
             onRemove = { goals.remove(it) },
+
+            // --- Lab 10 · Task 2: owner clears the list ---
+            onRemoveAll = { goals.clear() },
+
             modifier = modifier
         )
 
@@ -274,6 +278,7 @@ fun ListScreen(
     goals: List<String>,
     onBack: () -> Unit,
     onRemove: (String) -> Unit,
+    onRemoveAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // --- Class 9 · Step 6: system Back returns home ---
@@ -301,6 +306,12 @@ fun ListScreen(
             text = if (goals.size == 1) "1 goal" else "${goals.size} goals",
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        // --- Lab 10 · Task 2: remove all, through the owner ---
+        if (goals.isNotEmpty()) {
+            TextButton(onClick = onRemoveAll) {
+                Text("Remove all")
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -310,6 +321,12 @@ fun ListScreen(
                 text = "No goals yet. Add one on the home screen.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            // --- Lab 10 · Task 1: a way out of the empty screen ---
+            Button(onClick = onBack) {
+                Text("Go home")
+            }
+
         } else {
             // --- Class 10 · Step 2: a list that scrolls ---
             LazyColumn(
@@ -438,7 +455,8 @@ fun ListScreenPreview() {
                 "Improve my programming skills"
             ),
             onBack = {},
-            onRemove = {}
+            onRemove = {},
+            onRemoveAll = {}
         )
     }
 }
@@ -451,7 +469,8 @@ fun ListScreenEmptyPreview() {
         ListScreen(
             goals = emptyList(),
             onBack = {},
-            onRemove = {}
+            onRemove = {},
+            onRemoveAll = {}
         )
     }
 }
