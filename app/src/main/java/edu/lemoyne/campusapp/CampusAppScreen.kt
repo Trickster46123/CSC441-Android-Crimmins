@@ -1,13 +1,20 @@
 package edu.lemoyne.campusapp
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -18,7 +25,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -27,9 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.lemoyne.campusapp.ui.theme.CampusAppTheme
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.activity.compose.BackHandler
-
 
 // --- Class 8 · Step 2: one rule book for goal names ---
 const val MAX_NAME_LENGTH = 40
@@ -56,7 +62,6 @@ fun validateGoalName(input: String, existing: List<String>): String? {
     }
 }
 
-
 // --- Class 7 · Step 1: a counter that remembers ---
 @Composable
 fun CounterDemo() {
@@ -72,17 +77,19 @@ fun CounterDemo() {
     }
 }
 
-
 // --- Class 9 · Step 2: one owner for the data ---
 @Composable
 fun CampusAppScreen(modifier: Modifier = Modifier) {
+
     // --- Class 7 · Step 2: the list lives in state ---
+    // --- Class 10 · Step 2: original goals restored ---
     val goals = remember {
         mutableStateListOf(
             "Finish assignments",
             "Workout",
             "Work on personal projects",
-            "Prepare for my career"
+            "Prepare for my career",
+            "Improve my programming skills"
         )
     }
 
@@ -103,6 +110,13 @@ fun CampusAppScreen(modifier: Modifier = Modifier) {
         "list" -> ListScreen(
             goals = goals,
             onBack = { currentScreen = "home" },
+
+            // --- Class 10 · Step 4: only the owner changes the list ---
+            onRemove = { goals.remove(it) },
+
+            // --- Lab 10 · Task 2: owner clears the list ---
+            onRemoveAll = { goals.clear() },
+
             modifier = modifier
         )
 
@@ -114,7 +128,6 @@ fun CampusAppScreen(modifier: Modifier = Modifier) {
     }
 }
 
-
 // --- Class 9 · Step 2: HomeScreen gets its data from outside ---
 // --- Lab 9 · Task 2: About screen callback ---
 @Composable
@@ -125,7 +138,6 @@ fun HomeScreen(
     onAbout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     // --- Class 7 · Step 3: what's typed lives in state ---
     var newGoal by remember { mutableStateOf("") }
 
@@ -189,17 +201,14 @@ fun HomeScreen(
         // --- Class 7 · Step 4: the button changes the state ---
         Button(
             onClick = {
-
                 // --- Class 8 · Step 3: check before you add ---
                 val problem = validateGoalName(newGoal, goals)
 
                 if (problem == null) {
-
                     // --- Class 9 · Step 2: ask the owner to add it ---
                     onAddGoal(newGoal.trim())
                     newGoal = ""
                     errorMessage = null
-
                 } else {
                     errorMessage = problem
                 }
@@ -240,16 +249,18 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        // --- Class 9 · Step 5: open the goal list ---
         Spacer(modifier = Modifier.height(8.dp))
-// --- Class 9 · Step 5: open the goal list ---
+
+        // --- Class 9 · Step 5: open the goal list ---
         Button(onClick = onSeeAll) {
             Text("See all goals")
         }
-// --- Lab 9 · Task 2: About button ---
+
+        // --- Lab 9 · Task 2: About button ---
         TextButton(onClick = onAbout) {
             Text("About")
         }
+
         // --- Lab 6 · Task 2: footer ---
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -261,13 +272,13 @@ fun HomeScreen(
     }
 }
 
-
-
 // --- Class 9 · Step 3: the second screen ---
 @Composable
 fun ListScreen(
     goals: List<String>,
     onBack: () -> Unit,
+    onRemove: (String) -> Unit,
+    onRemoveAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // --- Class 9 · Step 6: system Back returns home ---
@@ -277,8 +288,8 @@ fun ListScreen(
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(24.dp)
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
     ) {
         TextButton(onClick = onBack) {
             Text("Back")
@@ -290,20 +301,72 @@ fun ListScreen(
             fontWeight = FontWeight.Bold
         )
 
-// --- Lab 9 · Task 1: count on the list screen ---
+        // --- Lab 9 · Task 1: count on the list screen ---
         Text(
             text = if (goals.size == 1) "1 goal" else "${goals.size} goals",
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        // --- Lab 10 · Task 2: remove all, through the owner ---
+        if (goals.isNotEmpty()) {
+            TextButton(onClick = onRemoveAll) {
+                Text("Remove all")
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        for (goal in goals) {
+        // --- Class 10 · Step 5: the empty case ---
+        if (goals.isEmpty()) {
             Text(
-                text = goal,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(vertical = 6.dp)
+                text = "No goals yet. Add one on the home screen.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            // --- Lab 10 · Task 1: a way out of the empty screen ---
+            Button(onClick = onBack) {
+                Text("Go home")
+            }
+
+        } else {
+            // --- Class 10 · Step 2: a list that scrolls ---
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(goals) { goal ->
+                    GoalRow(
+                        name = goal,
+                        onRemove = { onRemove(goal) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+// --- Class 10 · Step 3: one row, as its own Composable ---
+@Composable
+fun GoalRow(
+    name: String,
+    onRemove: () -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = name,
+                fontSize = 18.sp,
+                modifier = Modifier.weight(1f)
+            )
+
+            // --- Class 10 · Step 4: Remove button on every row ---
+            TextButton(onClick = onRemove) {
+                Text("Remove")
+            }
         }
     }
 }
@@ -354,11 +417,10 @@ fun HomeScreenPreview() {
             goals = listOf("Finish assignments", "Workout"),
             onAddGoal = {},
             onSeeAll = {},
-// --- Lab 9 · Task 2: About preview callback ---
-            onAbout = {})
+            onAbout = {}
+        )
     }
 }
-
 
 // --- Lab 6 · Task 4: dark mode preview ---
 @Preview(
@@ -373,11 +435,12 @@ fun HomeScreenDarkPreview() {
                 goals = listOf("Finish assignments", "Workout"),
                 onAddGoal = {},
                 onSeeAll = {},
-// --- Lab 9 · Task 2: About preview callback ---
-                onAbout = {})
+                onAbout = {}
+            )
         }
     }
 }
+
 // --- Class 9 · Step 7: preview the second screen ---
 @Preview(showBackground = true)
 @Composable
@@ -388,9 +451,26 @@ fun ListScreenPreview() {
                 "Finish assignments",
                 "Workout",
                 "Work on personal projects",
-                "Prepare for my career"
+                "Prepare for my career",
+                "Improve my programming skills"
             ),
-            onBack = {}
+            onBack = {},
+            onRemove = {},
+            onRemoveAll = {}
+        )
+    }
+}
+
+// --- Class 10 · Step 5: preview the empty case too ---
+@Preview(showBackground = true)
+@Composable
+fun ListScreenEmptyPreview() {
+    CampusAppTheme {
+        ListScreen(
+            goals = emptyList(),
+            onBack = {},
+            onRemove = {},
+            onRemoveAll = {}
         )
     }
 }
