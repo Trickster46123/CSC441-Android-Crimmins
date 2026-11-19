@@ -1,24 +1,25 @@
 
+
 package edu.lemoyne.campusapp
 
 import com.google.gson.annotations.SerializedName
 
 data class ShowcaseItem(
     @SerializedName("id")
-    val id: Int? = null,
+    val id: Int,
 
     @SerializedName("title")
-    val title: String? = null,
+    val title: String,
 
     @SerializedName("description")
-    val description: String? = null,
+    val description: String,
 
     @SerializedName("category")
-    val category: String? = null,
+    val category: String,
 
     @SerializedName("image_url")
     val imageUrl: String? = null,
 
     @SerializedName("created_at")
-    val createdAt: String? = null
+    val createdAt: String
 )
