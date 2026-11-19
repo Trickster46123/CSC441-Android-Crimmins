@@ -17,7 +17,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="GreetingPreview">
+      <SelectionState runConfigName="MainActivity (3)">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-09-25T03:43:33.058375100Z">
           <Target type="DEFAULT_BOOT">
@@ -28,9 +28,9 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="MainActivity (3)">
+      <SelectionState runConfigName="MainActivity (1)">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-09-25T03:43:33.058375100Z">
+        <DropdownSelection timestamp="2026-11-19T21:52:18.581112Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\samcr\.android\avd\Pixel_7.avd" />

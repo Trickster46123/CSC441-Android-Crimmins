@@ -39,3 +39,25 @@ Week 6, Friday.
 2. My two new goals were gone, and the list went back to the original four goals.
 
 3. rememberSaveable kept track of which screen I was on after rotating. However, remember did not save the two goals I added, so the list reset to the original four.
+
+## Week 13, Wednesday: Lab 21
+
+**1. What triggers refresh() when InterestsScreen first opens?**
+
+LaunchedEffect(Unit) automatically triggers the onRefresh callback when InterestsScreen opens, loading records from Supabase.
+
+**2. What triggers refresh() when the button is tapped?**
+
+The Refresh items button uses onClick = onRefresh to call the same refresh function and retrieve updated records from Supabase.
+
+**3. Why does InterestsScreen receive onRefresh instead of the ViewModel?**
+
+Using a callback keeps the UI separate from the ViewModel and makes the screen easier to reuse and test.
+
+**4. What is the difference between a successful [] response and a network failure?**
+
+A successful empty response means the API request worked but returned no records, displaying "No items yet." A network failure means the request could not complete, causing an error message to appear.
+
+**5. How did you prove Android and the website use the same Supabase data?**
+
+I compared two records between the Android app and my interests.html website and confirmed their titles and categories matched. I also modified a title in Supabase and verified the change appeared in Android after tapping Refresh items.
