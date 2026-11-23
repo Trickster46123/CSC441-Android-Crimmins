@@ -61,3 +61,7 @@ A successful empty response means the API request worked but returned no records
 **5. How did you prove Android and the website use the same Supabase data?**
 
 I compared two records between the Android app and my interests.html website and confirmed their titles and categories matched. I also modified a title in Supabase and verified the change appeared in Android after tapping Refresh items.
+
+AI use
+
+I used ChatGPT to help debug and implement Supabase authentication for Lab 22, including Retrofit API requests, Repository functions, ViewModels, LoginScreen, and navigation. I reviewed the code, tested successful and failed login attempts, and verified that the Android app retrieved my Supabase records.
