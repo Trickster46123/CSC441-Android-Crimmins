@@ -16,8 +16,9 @@ import edu.lemoyne.campusapp.ui.theme.CampusAppTheme
 
 class MainActivity : ComponentActivity() {
 
-    // Existing Showcase ViewModel
     private val showcaseViewModel: ShowcaseViewModel by viewModels()
+
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +27,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            // Collect Supabase state
             val showcaseState by showcaseViewModel.uiState
+                .collectAsStateWithLifecycle()
+
+            val loginState by loginViewModel.state
                 .collectAsStateWithLifecycle()
 
             CampusAppTheme {
@@ -38,7 +41,22 @@ class MainActivity : ComponentActivity() {
 
                     CampusAppScreen(
                         showcaseState = showcaseState,
+                        loginState = loginState,
                         onRefreshShowcase = showcaseViewModel::refresh,
+                        onLogin = { email, password, navigate ->
+
+                            loginViewModel.login(
+                                email = email,
+                                password = password
+                            ) { token ->
+
+                                showcaseViewModel.setAccessToken(token)
+
+                                showcaseViewModel.refresh()
+
+                                navigate()
+                            }
+                        },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

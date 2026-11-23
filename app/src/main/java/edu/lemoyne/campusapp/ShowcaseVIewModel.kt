@@ -3,11 +3,13 @@ package edu.lemoyne.campusapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 sealed class ShowcaseUiState {
+
     data object Loading : ShowcaseUiState()
 
     data class Success(
@@ -29,17 +31,37 @@ class ShowcaseViewModel : ViewModel() {
 
     val uiState: StateFlow<ShowcaseUiState> = _uiState
 
-    init {
-        refresh()
+    // Lab 22: Store access token in memory
+    private var accessToken: String? = null
+
+    fun setAccessToken(token: String) {
+        accessToken = token
     }
 
+    // Lab 22: Authenticated refresh
     fun refresh() {
+
+        val token = accessToken ?: run {
+            _uiState.value = ShowcaseUiState.Error(
+                "Please log in first"
+            )
+            return
+        }
+
         viewModelScope.launch {
+
             _uiState.value = ShowcaseUiState.Loading
 
             try {
-                val items = repository.loadItems()
-                _uiState.value = ShowcaseUiState.Success(items)
+                val items = repository.loadItems(token)
+
+                _uiState.value = ShowcaseUiState.Success(
+                    items
+                )
+
+            } catch (error: CancellationException) {
+                throw error
+
             } catch (error: Exception) {
                 _uiState.value = ShowcaseUiState.Error(
                     error.message ?: "Network error"
