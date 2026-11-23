@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.lemoyne.campusapp.ui.theme.CampusAppTheme
 
-// --- Class 8: Goal name validation ---
+// Class 8: Goal name validation
 const val MAX_NAME_LENGTH = 40
 
 fun validateGoalName(
@@ -68,7 +70,7 @@ fun validateGoalName(
     }
 }
 
-// --- Class 7: Counter demo ---
+// Class 7: Counter demo
 @Composable
 fun CounterDemo() {
 
@@ -86,16 +88,17 @@ fun CounterDemo() {
     }
 }
 
-// --- Main screen owner ---
-// --- Lab 21: Supabase state and refresh callback ---
+// Lab 22: Main screen owner
 @Composable
 fun CampusAppScreen(
     showcaseState: ShowcaseUiState,
+    loginState: LoginUiState,
     onRefreshShowcase: () -> Unit,
+    onLogin: (String, String, () -> Unit) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    // Original goal list
+    // Original Momentum goals
     val goals = remember {
         mutableStateListOf(
             "Finish assignments",
@@ -106,13 +109,13 @@ fun CampusAppScreen(
         )
     }
 
-    // Navigation state
     var currentScreen by rememberSaveable {
         mutableStateOf("home")
     }
 
     when (currentScreen) {
 
+        // Original Home screen
         "home" -> HomeScreen(
             goals = goals,
             onAddGoal = { goals.add(it) },
@@ -122,12 +125,13 @@ fun CampusAppScreen(
             onAbout = {
                 currentScreen = "about"
             },
-            onSupabase = {
-                currentScreen = "supabase"
+            onInterestsClick = {
+                currentScreen = "login"
             },
             modifier = modifier
         )
 
+        // Original goals list
         "list" -> ListScreen(
             goals = goals,
             onBack = {
@@ -142,6 +146,7 @@ fun CampusAppScreen(
             modifier = modifier
         )
 
+        // Original About screen
         "about" -> AboutScreen(
             onBack = {
                 currentScreen = "home"
@@ -149,8 +154,22 @@ fun CampusAppScreen(
             modifier = modifier
         )
 
-        // --- Lab 21: Supabase navigation ---
-        "supabase" -> InterestsScreen(
+        // Lab 22: Login before accessing interests
+        "login" -> LoginScreen(
+            state = loginState,
+            onLogin = { email, password ->
+                onLogin(email, password) {
+                    currentScreen = "interests"
+                }
+            },
+            onBack = {
+                currentScreen = "home"
+            },
+            modifier = modifier
+        )
+
+        // Lab 22: Authenticated Supabase screen
+        "interests" -> InterestsScreen(
             state = showcaseState,
             onBack = {
                 currentScreen = "home"
@@ -161,14 +180,14 @@ fun CampusAppScreen(
     }
 }
 
-// --- Home Screen ---
+// Home Screen
 @Composable
 fun HomeScreen(
     goals: List<String>,
     onAddGoal: (String) -> Unit,
     onSeeAll: () -> Unit,
     onAbout: () -> Unit,
-    onSupabase: () -> Unit = {},
+    onInterestsClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
 
@@ -182,11 +201,12 @@ fun HomeScreen(
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp)
     ) {
 
-        // Header image
+        // Original Momentum header
         Image(
             painter = painterResource(
                 id = R.drawable.header
@@ -199,9 +219,7 @@ fun HomeScreen(
                 .height(180.dp)
         )
 
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Goal input
         OutlinedTextField(
@@ -218,7 +236,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Validation message
+        // Goal validation
         errorMessage?.let { message ->
             Text(
                 text = message,
@@ -234,11 +252,9 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Add goal button
+        // Add goal
         Button(
             onClick = {
 
@@ -260,9 +276,7 @@ fun HomeScreen(
             Text("Add goal")
         }
 
-        Spacer(
-            modifier = Modifier.height(24.dp)
-        )
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Momentum title
         Text(
@@ -271,9 +285,7 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "Keep moving toward your goals",
@@ -281,9 +293,7 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Spacer(
-            modifier = Modifier.height(24.dp)
-        )
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Goal count
         Text(
@@ -295,36 +305,32 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Open goal list
+        // Existing goals list button
         Button(
             onClick = onSeeAll
         ) {
             Text("See all goals")
         }
 
-        // About button
+        // Existing About button
         TextButton(
             onClick = onAbout
         ) {
             Text("About")
         }
 
-        // --- Lab 21: Open Supabase ---
+        // Lab 22: Login navigation
         Button(
-            onClick = onSupabase
+            onClick = onInterestsClick
         ) {
-            Text("Open Supabase")
+            Text("My Interests")
         }
 
-        // Footer
-        Spacer(
-            modifier = Modifier.height(24.dp)
-        )
+        Spacer(modifier = Modifier.height(24.dp))
 
+        // Original footer
         Text(
             text = "Last updated September 2026",
             fontSize = 12.sp,
@@ -333,7 +339,7 @@ fun HomeScreen(
     }
 }
 
-// --- List Screen ---
+// List Screen
 @Composable
 fun ListScreen(
     goals: List<String>,
@@ -353,9 +359,7 @@ fun ListScreen(
             .padding(horizontal = 24.dp)
     ) {
 
-        TextButton(
-            onClick = onBack
-        ) {
+        TextButton(onClick = onBack) {
             Text("Back")
         }
 
@@ -365,7 +369,6 @@ fun ListScreen(
             fontWeight = FontWeight.Bold
         )
 
-        // Goal count
         Text(
             text = if (goals.size == 1) {
                 "1 goal"
@@ -375,7 +378,7 @@ fun ListScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        // Remove all
+        // Remove all goals
         if (goals.isNotEmpty()) {
             TextButton(
                 onClick = onRemoveAll
@@ -384,11 +387,8 @@ fun ListScreen(
             }
         }
 
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Empty list
         if (goals.isEmpty()) {
 
             Text(
@@ -396,16 +396,14 @@ fun ListScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Button(
-                onClick = onBack
-            ) {
+            Button(onClick = onBack) {
                 Text("Go home")
             }
 
         } else {
 
-            // Goal list
             LazyColumn(
+                modifier = Modifier.weight(1f),
                 verticalArrangement =
                     Arrangement.spacedBy(8.dp)
             ) {
@@ -422,7 +420,7 @@ fun ListScreen(
     }
 }
 
-// --- Goal Row ---
+// Goal Row
 @Composable
 fun GoalRow(
     name: String,
@@ -447,16 +445,14 @@ fun GoalRow(
                 modifier = Modifier.weight(1f)
             )
 
-            TextButton(
-                onClick = onRemove
-            ) {
+            TextButton(onClick = onRemove) {
                 Text("Remove")
             }
         }
     }
 }
 
-// --- About Screen ---
+// About Screen
 @Composable
 fun AboutScreen(
     onBack: () -> Unit,
@@ -469,13 +465,11 @@ fun AboutScreen(
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(24.dp)
     ) {
 
-        TextButton(
-            onClick = onBack
-        ) {
+        TextButton(onClick = onBack) {
             Text("Back")
         }
 
@@ -485,9 +479,7 @@ fun AboutScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Momentum helps me keep track of my goals and stay motivated."
@@ -499,7 +491,7 @@ fun AboutScreen(
     }
 }
 
-// --- Home Screen Preview ---
+// Home Screen Preview
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
@@ -517,7 +509,7 @@ fun HomeScreenPreview() {
     }
 }
 
-// --- Dark Mode Preview ---
+// Dark Mode Preview
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES
@@ -540,7 +532,7 @@ fun HomeScreenDarkPreview() {
     }
 }
 
-// --- List Screen Preview ---
+// List Screen Preview
 @Preview(showBackground = true)
 @Composable
 fun ListScreenPreview() {
@@ -561,7 +553,7 @@ fun ListScreenPreview() {
     }
 }
 
-// --- Empty List Preview ---
+// Empty List Preview
 @Preview(showBackground = true)
 @Composable
 fun ListScreenEmptyPreview() {
@@ -576,7 +568,7 @@ fun ListScreenEmptyPreview() {
     }
 }
 
-// --- About Screen Preview ---
+// About Screen Preview
 @Preview(showBackground = true)
 @Composable
 fun AboutScreenPreview() {

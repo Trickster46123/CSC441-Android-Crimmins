@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -23,10 +22,8 @@ fun InterestsScreen(
     modifier: Modifier = Modifier
 ) {
 
-    // Lab 21: Task 1 - Load when screen opens
-    LaunchedEffect(Unit) {
-        onRefresh()
-    }
+    // Lab 22: Refresh now happens after login.
+    // Keep the manual refresh button.
 
     BackHandler {
         onBack()
@@ -42,7 +39,6 @@ fun InterestsScreen(
             Text("Back")
         }
 
-        // Lab 21: Task 1 - Manual refresh
         TextButton(onClick = onRefresh) {
             Text("Refresh items")
         }
@@ -54,9 +50,7 @@ fun InterestsScreen(
             }
 
             is ShowcaseUiState.Error -> {
-                Column {
-                    Text("Could not load: ${state.message}")
-                }
+                Text("Could not load: ${state.message}")
             }
 
             is ShowcaseUiState.Success -> {
@@ -73,7 +67,7 @@ fun InterestsScreen(
 
                         items(state.items) { item ->
                             Column(
-                                Modifier.padding(8.dp)
+                                modifier = Modifier.padding(8.dp)
                             ) {
                                 Text(item.title)
                                 Text(item.category)
